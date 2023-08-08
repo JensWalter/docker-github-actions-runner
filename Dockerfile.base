@@ -29,6 +29,7 @@ RUN echo en_US.UTF-8 UTF-8 >> /etc/locale.gen \
     gpg-agent \
     software-properties-common \
     build-essential \
+    pkg-config \
     zlib1g-dev \
     zstd \
     gettext \
