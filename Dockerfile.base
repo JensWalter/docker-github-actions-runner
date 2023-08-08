@@ -8,6 +8,7 @@ ENV GIT_LFS_VERSION="3.2.0"
 ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US.UTF-8
 ENV LC_ALL=en_US.UTF-8
+ENV PKG_CONFIG_PATH=/opt/local/lib/pkgconfig
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ENV DEBIAN_FRONTEND=noninteractive
 # hadolint ignore=SC2086,DL3015,DL3008,DL3013,SC2015
