@@ -103,6 +103,8 @@ RUN chmod +x /actions-runner/install_actions.sh \
 
 COPY token.sh entrypoint.sh app_token.sh /
 RUN chmod +x /token.sh /entrypoint.sh /app_token.sh
+# https://github.com/containers/buildah/issues/3666#issuecomment-1351992335
+VOLUME /var/lib/containers
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["./bin/Runner.Listener", "run", "--startuptype", "service"]
