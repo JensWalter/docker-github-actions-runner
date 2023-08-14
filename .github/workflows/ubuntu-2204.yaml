@@ -1,4 +1,4 @@
-name: build
+name: ubuntu-2204
 on:
   workflow_dispatch:
   push:
