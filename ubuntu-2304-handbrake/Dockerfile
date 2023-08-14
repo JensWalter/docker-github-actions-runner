@@ -48,6 +48,7 @@ RUN echo en_US.UTF-8 UTF-8 >> /etc/locale.gen \
     rsync \
     libpq-dev \
     libssl-dev \
+    handbrake-cli
     gosu \
   && DPKG_ARCH="$(dpkg --print-architecture)" \
   && LSB_RELEASE_CODENAME="$(lsb_release --codename | cut -f2)" \
