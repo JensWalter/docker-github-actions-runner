@@ -25,5 +25,5 @@ jobs:
         password: ${{ secrets.GCLOUD_SERVICE_KEY }}
     - name: uploading image
       run: |
-        docker tag gh-runner eu.gcr.io/downtozero/gh-ubuntu-2304-runner:latest
-        docker push eu.gcr.io/downtozero/gh-ubuntu-2304-runner:latest
+        docker tag gh-runner eu.gcr.io/downtozero/gh-ubuntu-2304:latest
+        docker push eu.gcr.io/downtozero/gh-ubuntu-2304:latest
