@@ -96,6 +96,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 WORKDIR /actions-runner
 COPY install_actions.sh /actions-runner
+COPY ubuntu-2304-handbrake/.setup-info .setup-info
 
 RUN chmod +x /actions-runner/install_actions.sh \
   && /actions-runner/install_actions.sh ${GH_RUNNER_VERSION} ${TARGETPLATFORM} \
