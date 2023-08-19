@@ -13,19 +13,11 @@
     },
     {
       "group": "key",
-      "detail": "value1"
-    },
-    {
-      "group": "key",
       "detail": "value2"
     },
     {
         "group": "::endgroup",
         "detail": "group start"
-    },
-    {
-        "group": "key5",
-        "detail": "val5"
     },
     {
         "group": "key5",
