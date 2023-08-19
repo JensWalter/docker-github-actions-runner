@@ -6,21 +6,5 @@
     {
       "group": "Software Detail",
       "detail": "software defails"
-    },
-    {
-      "group": "::group",
-      "detail": "group start"
-    },
-    {
-      "group": "key",
-      "detail": "value2"
-    },
-    {
-        "group": "::endgroup",
-        "detail": "group start"
-    },
-    {
-        "group": "key5",
-        "detail": "val6"
     }  
 ]
