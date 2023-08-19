@@ -104,12 +104,6 @@ RUN chmod +x /actions-runner/install_actions.sh \
 
 COPY token.sh entrypoint.sh app_token.sh /
 
-COPY ubuntu-2304-handbrake/.setup-info /_work/.setup-info
-COPY ubuntu-2304-handbrake/.setup-info /actions-runner/imagedata.json
-
-ENV ImageVersion=test1
-RUN echo 'export ImageOS=test2' >> ~/.bashrc
-
 RUN chmod +x /token.sh /entrypoint.sh /app_token.sh
 # https://github.com/containers/buildah/issues/3666#issuecomment-1351992335
 VOLUME /var/lib/containers
