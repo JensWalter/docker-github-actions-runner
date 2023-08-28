@@ -1,4 +1,4 @@
-name: ubuntu-2204-rust
+name: ubuntu-2204-rust-protoc
 on:
   workflow_dispatch:
   push:
