@@ -83,9 +83,9 @@ RUN echo en_US.UTF-8 UTF-8 >> /etc/locale.gen \
   && usermod -aG docker runner \
   && echo '%sudo ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers \
   && ( [[ -f /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list ]] && rm /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list || : )
-# RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/devel_kubic_libcontainers_unstable.gpg] \
-#             https://download.opensuse.org/repositories/devel:kubic:libcontainers:unstable/Debian_Testing/ /" \
-#           | tee /etc/apt/sources.list.d/devel:kubic:libcontainers:unstable.list > /dev/null
+RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/devel_kubic_libcontainers_unstable.gpg] \
+            https://download.opensuse.org/repositories/devel:kubic:libcontainers:unstable/Debian_Testing/ /" \
+          | tee /etc/apt/sources.list.d/devel:kubic:libcontainers:unstable.list > /dev/null
 RUN apt-get install -y crun podman containers-common
     # aardvark-dns \
     # containers-common \
