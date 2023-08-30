@@ -53,7 +53,8 @@ RUN echo en_US.UTF-8 UTF-8 >> /etc/locale.gen \
     rsync \
     libpq-dev \
     libssl-dev \
-    gosu \
+    gosu
+RUN apt-get install -y \
     aardvark-dns \
     containers-common \
     criu libnet1 \
