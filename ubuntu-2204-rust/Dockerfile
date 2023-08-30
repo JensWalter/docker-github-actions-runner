@@ -86,7 +86,7 @@ RUN echo en_US.UTF-8 UTF-8 >> /etc/locale.gen \
 RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/devel_kubic_libcontainers_unstable.gpg] \
             https://download.opensuse.org/repositories/devel:kubic:libcontainers:unstable/Debian_Testing/ /" \
           | tee /etc/apt/sources.list.d/devel:kubic:libcontainers:unstable.list > /dev/null
-RUN apt-get install -y crun podman containers-common
+RUN apt-get update && apt-get install -y crun podman containers-common
     # aardvark-dns \
     # containers-common \
     # criu libnet1 \
