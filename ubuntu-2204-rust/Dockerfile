@@ -54,18 +54,17 @@ RUN echo en_US.UTF-8 UTF-8 >> /etc/locale.gen \
     libpq-dev \
     libssl-dev \
     gosu
-RUN apt-get install -y \
-    aardvark-dns \
-    containers-common \
-    criu libnet1 \
-    libprotobuf-c1 \
-    libprotobuf23 \
-    netavark \
-    podman-gvproxy \
-    python3-protobuf \
-    conmon \
-    crun \
-    podman 
+RUN apt-get install -y crun
+    # aardvark-dns \
+    # containers-common \
+    # criu libnet1 \
+    # libprotobuf-c1 \
+    # libprotobuf23 \
+    # netavark \
+    # podman-gvproxy \
+    # python3-protobuf \
+    # conmon \
+    # podman 
 RUN DPKG_ARCH="$(dpkg --print-architecture)" \
   && LSB_RELEASE_CODENAME="$(lsb_release --codename | cut -f2)" \
   && sed -e 's/Defaults.*env_reset/Defaults env_keep = "HTTP_PROXY HTTPS_PROXY NO_PROXY FTP_PROXY http_proxy https_proxy no_proxy ftp_proxy"/' -i /etc/sudoers \
