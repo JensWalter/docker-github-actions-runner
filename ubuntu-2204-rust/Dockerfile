@@ -53,19 +53,8 @@ RUN echo en_US.UTF-8 UTF-8 >> /etc/locale.gen \
     rsync \
     libpq-dev \
     libssl-dev \
-    gosu
-RUN apt-get install -y crun
-    # aardvark-dns \
-    # containers-common \
-    # criu libnet1 \
-    # libprotobuf-c1 \
-    # libprotobuf23 \
-    # netavark \
-    # podman-gvproxy \
-    # python3-protobuf \
-    # conmon \
-    # podman 
-RUN DPKG_ARCH="$(dpkg --print-architecture)" \
+    gosu \
+  && DPKG_ARCH="$(dpkg --print-architecture)" \
   && LSB_RELEASE_CODENAME="$(lsb_release --codename | cut -f2)" \
   && sed -e 's/Defaults.*env_reset/Defaults env_keep = "HTTP_PROXY HTTPS_PROXY NO_PROXY FTP_PROXY http_proxy https_proxy no_proxy ftp_proxy"/' -i /etc/sudoers \
   && echo deb http://ppa.launchpad.net/git-core/ppa/ubuntu $([[ $(grep -E '^ID=' /etc/os-release | sed 's/.*=//g') == "ubuntu" ]] && (grep VERSION_CODENAME /etc/os-release | sed 's/.*=//g') || echo bionic) main>/etc/apt/sources.list.d/git-core.list \
@@ -97,6 +86,17 @@ RUN DPKG_ARCH="$(dpkg --print-architecture)" \
   && usermod -aG docker runner \
   && echo '%sudo ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers \
   && ( [[ -f /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list ]] && rm /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list || : )
+RUN apt-get install -y crun podman
+    # aardvark-dns \
+    # containers-common \
+    # criu libnet1 \
+    # libprotobuf-c1 \
+    # libprotobuf23 \
+    # netavark \
+    # podman-gvproxy \
+    # python3-protobuf \
+    # conmon \
+    # podman 
 
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
