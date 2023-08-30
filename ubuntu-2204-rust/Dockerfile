@@ -89,17 +89,16 @@ RUN curl -fsSL https://download.opensuse.org/repositories/devel:kubic:libcontain
 RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/devel_kubic_libcontainers_unstable.gpg] \
             https://download.opensuse.org/repositories/devel:kubic:libcontainers:unstable/Debian_Testing/ /" \
           | tee /etc/apt/sources.list.d/devel:kubic:libcontainers:unstable.list > /dev/null
-RUN apt-get update && apt-get install -y crun podman containers-common
-    # aardvark-dns \
-    # containers-common \
-    # criu libnet1 \
-    # libprotobuf-c1 \
-    # libprotobuf23 \
-    # netavark \
-    # podman-gvproxy \
-    # python3-protobuf \
-    # conmon \
-    # podman 
+RUN apt-get update && apt-get install -y crun podman containers-common \
+    aardvark-dns \
+    criu libnet1 \
+    libprotobuf-c1 \
+    libprotobuf23 \
+    netavark \
+    podman-gvproxy \
+    python3-protobuf \
+    conmon \
+    podman 
 
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
