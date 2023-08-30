@@ -4,6 +4,8 @@ on:
   push:
     branches:
     - main
+    paths:
+      - 'ubuntu-2204-rust-musl/*'
 jobs:
   build:
     permissions: write-all
