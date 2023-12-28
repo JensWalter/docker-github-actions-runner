@@ -1,3 +1,10 @@
+FROM ubuntu:22.04 as rustcache
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+# do demo project
+RUN cargo new abc
+RUN cd abc && cargo add tokio env_logger log env-var axum reqwest tower-http dtz-identity-auth cached base64 && cargo build 
+
 FROM ubuntu:22.04 as builder
 
 ARG DUMB_INIT_VERSION="1.2.2"
@@ -100,7 +107,8 @@ RUN apt-get update && apt-get install -y crun podman \
     # netavark \
     # podman-gvproxy \
 
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
+# RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
+COPY --from=rustcache /root/.cargo /root/.cargo
 ENV PATH="/root/.cargo/bin:${PATH}"
 
 ENV AGENT_TOOLSDIRECTORY=/opt/hostedtoolcache
