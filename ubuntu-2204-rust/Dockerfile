@@ -2,8 +2,9 @@ FROM ubuntu:22.04 as rustcache
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 # do demo project
-RUN cargo new abc
-RUN cd abc && cargo add tokio env_logger log env-var axum reqwest tower-http dtz-identity-auth cached base64 && cargo build 
+WORKDIR /root/abc
+RUN cargo init
+RUN cargo add tokio env_logger log env-var axum reqwest tower-http dtz-identity-auth cached base64 && cargo build 
 
 FROM ubuntu:22.04 as builder
 
