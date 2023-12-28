@@ -110,7 +110,7 @@ RUN apt-get update && apt-get install -y crun podman \
     # netavark \
     # podman-gvproxy \
 
-# RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
 COPY --from=rustcache /root/.cargo /root/.cargo
 ENV PATH="/root/.cargo/bin:${PATH}"
 
