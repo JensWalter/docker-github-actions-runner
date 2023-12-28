@@ -1,6 +1,6 @@
 FROM ubuntu:22.04 as rustcache
 RUN apt-get update \
-  && apt-get install -y curl tar unzip gcc make ca-certificates
+  && apt-get install -y curl tar unzip gcc make ca-certificates pkg-config libssl-dev
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 # do demo project
