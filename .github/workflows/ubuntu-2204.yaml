@@ -20,7 +20,7 @@ jobs:
       run: |
         docker build -t eu.gcr.io/downtozero/gh-runner-2204 -f ubuntu-2204/Dockerfile .
     - name: Login to DockerHub
-      uses: docker/login-action@v2
+      uses: docker/login-action@v3
       with:
         registry: eu.gcr.io
         username: _json_key
