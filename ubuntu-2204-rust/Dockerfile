@@ -6,7 +6,7 @@ ENV PATH="/root/.cargo/bin:${PATH}"
 # do demo project
 WORKDIR /root/abc
 RUN cargo init
-RUN cargo add tokio env_logger log env-var axum reqwest tower-http dtz-identity-auth cached base64 zstd urlencoding is-terminal num_cpus parking_lot either lock_api scopeguard xmlparser futures flate2 aws-config && cargo build 
+RUN cargo add adler atoi aws-config axum base64 cached chrono crc dtz-identity-auth either env_logger env-var flate2 futures hex include_dir is-terminal jwt lock_api log miniz_oxide nix num_cpus nom parking_lot paste reqwest scopeguard sqlx tokio tower-http urlencoding webpki-roots xmlparser zstd  && cargo build 
 
 FROM ubuntu:22.04 as builder
 
