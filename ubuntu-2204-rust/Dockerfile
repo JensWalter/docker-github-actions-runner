@@ -113,8 +113,8 @@ RUN apt-get update && apt-get install -y crun podman \
     # netavark \
     # podman-gvproxy \
 
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
 COPY --from=rustcache /root/.cargo /root/.cargo
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
 ENV AGENT_TOOLSDIRECTORY=/opt/hostedtoolcache
