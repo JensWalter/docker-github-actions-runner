@@ -93,16 +93,25 @@ RUN echo en_US.UTF-8 UTF-8 >> /etc/locale.gen \
   && usermod -aG docker runner \
   && echo '%sudo ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers \
   && ( [[ -f /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list ]] && rm /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list || : )
-
+# RUN curl -fsSL https://download.opensuse.org/repositories/devel:kubic:libcontainers:unstable/Debian_Testing/Release.key \
+#           | gpg --dearmor \
+#           | sudo tee /etc/apt/keyrings/devel_kubic_libcontainers_unstable.gpg > /dev/null
+# RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/devel_kubic_libcontainers_unstable.gpg] \
+#             https://download.opensuse.org/repositories/devel:kubic:libcontainers:unstable/Debian_Testing/ /" \
+#           | tee /etc/apt/sources.list.d/devel:kubic:libcontainers:unstable.list > /dev/null
 RUN apt-get update && apt-get install -y crun podman \
     criu libnet1 \
     libprotobuf-c1 \
     libprotobuf23 \
     python3-protobuf \
     conmon 
+    # containers-common \
+    # aardvark-dns \
+    # netavark \
+    # podman-gvproxy \
 
-COPY --from=rustcache /root/.cargo /root/.cargo
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
+COPY --from=rustcache /root/.cargo /root/.cargo
 ENV PATH="/root/.cargo/bin:${PATH}"
 
 ENV AGENT_TOOLSDIRECTORY=/opt/hostedtoolcache
