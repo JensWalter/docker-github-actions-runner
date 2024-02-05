@@ -1,3 +1,13 @@
+FROM ubuntu:22.04 as rustcache
+RUN apt-get update \
+  && apt-get install -y curl tar unzip gcc make ca-certificates pkg-config libssl-dev
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+# do demo project
+WORKDIR /root/abc
+RUN cargo init
+RUN cargo add adler atoi aws-config axum base64 cached chrono crc dtz-identity-auth either env_logger env-var flate2 futures hex include_dir is-terminal jwt lock_api log miniz_oxide nix num_cpus nom parking_lot paste reqwest scopeguard sqlx tokio tower-http urlencoding webpki-roots xmlparser zstd  && cargo build 
+
 FROM ubuntu:22.04 as builder
 
 ARG DUMB_INIT_VERSION="1.2.2"
@@ -86,6 +96,7 @@ RUN echo en_US.UTF-8 UTF-8 >> /etc/locale.gen \
   && echo '%sudo ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers \
   && ( [[ -f /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list ]] && rm /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list || : )
 
+COPY --from=rustcache /root/.cargo /root/.cargo
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 RUN rustup target add x86_64-unknown-linux-musl
