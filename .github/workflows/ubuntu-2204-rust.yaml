@@ -1,6 +1,8 @@
 name: ubuntu-2204-rust
 on:
   workflow_dispatch:
+  schedule:
+    - cron:  '30 13 * * 0,2,4'
   push:
     branches:
     - main
