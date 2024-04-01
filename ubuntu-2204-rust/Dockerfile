@@ -1,6 +1,6 @@
 FROM ubuntu:22.04 as rustcache
 RUN apt-get update \
-  && apt-get install -y curl tar unzip gcc make ca-certificates pkg-config libssl-dev
+  && apt-get install -y curl tar unzip gcc make ca-certificates pkg-config libssl-dev cmake
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 # do demo project
@@ -66,6 +66,7 @@ RUN echo en_US.UTF-8 UTF-8 >> /etc/locale.gen \
     gosu \
     libssl-dev \
     pkg-config \
+    cmake \
   && DPKG_ARCH="$(dpkg --print-architecture)" \
   && LSB_RELEASE_CODENAME="$(lsb_release --codename | cut -f2)" \
   && sed -e 's/Defaults.*env_reset/Defaults env_keep = "HTTP_PROXY HTTPS_PROXY NO_PROXY FTP_PROXY http_proxy https_proxy no_proxy ftp_proxy"/' -i /etc/sudoers \
@@ -108,10 +109,6 @@ RUN apt-get update && apt-get install -y crun podman \
     libprotobuf23 \
     python3-protobuf \
     conmon 
-    # containers-common \
-    # aardvark-dns \
-    # netavark \
-    # podman-gvproxy \
 
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
 COPY --from=rustcache /root/.cargo /root/.cargo
