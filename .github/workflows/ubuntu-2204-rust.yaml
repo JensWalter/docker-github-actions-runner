@@ -27,10 +27,10 @@ jobs:
         registry: cr.dtz.rocks
         username: apikey
         password: ${{ secrets.DTZ_API_KEY }}
-    - name: uploading image
-      timeout-minutes: 10
-      run: |
-        docker push cr.dtz.rocks/gh-ubuntu-2204-rust:latest
+    # - name: uploading image
+    #   timeout-minutes: 10
+    #   run: |
+    #     docker push cr.dtz.rocks/gh-ubuntu-2204-rust:latest
     - name: Login to DockerHub
       uses: docker/login-action@v3
       with:
