@@ -40,8 +40,27 @@ ENV ACTIONS_RUNNER_PRINT_LOG_TO_STDOUT=1
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
+ENV AGENT_TOOLSDIRECTORY=/opt/hostedtoolcache
+RUN mkdir -p /opt/hostedtoolcache
+
 # configure directory permissions; ref https://github.com/actions/runner-images/blob/main/images/ubuntu/scripts/build/configure-system.sh
 RUN chmod -R 777 /opt /usr/share
 
 WORKDIR /home/runner
 USER runner
+
+WORKDIR /actions-runner
+COPY install_actions.sh /actions-runner
+
+RUN chmod +x /actions-runner/install_actions.sh \
+  && /actions-runner/install_actions.sh ${GH_RUNNER_VERSION} ${TARGETPLATFORM} \
+  && rm /actions-runner/install_actions.sh \
+  && chown runner /_work /actions-runner /opt/hostedtoolcache
+
+COPY token.sh entrypoint.sh app_token.sh /
+RUN chmod +x /token.sh /entrypoint.sh /app_token.sh
+# https://github.com/containers/buildah/issues/3666#issuecomment-1351992335
+VOLUME /var/lib/containers
+
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["./bin/Runner.Listener", "run", "--startuptype", "service"]
