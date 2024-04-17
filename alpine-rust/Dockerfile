@@ -11,7 +11,7 @@ RUN addgroup -S runner && adduser -S runner -G runner && mkdir -p /etc/sudoers.d
 
 RUN apk add -q --no-cache curl git unzip sudo jq bash openssl gcompat nodejs tar
 # basic dev tools
-RUN apk add -q --no-cache build-base musl-dev linux-headers
+RUN apk add -q --no-cache build-base musl-dev linux-headers dotnet7-sdk aspnetcore7-runtime dotnet7-runtime dumb-init
 
 # Install dotnet
 # https://github.com/actions/runner/blob/main/docs/start/envlinux.md#install-net-core-3x-linux-dependencies
@@ -50,18 +50,18 @@ RUN mkdir -p /opt/hostedtoolcache
 # configure directory permissions; ref https://github.com/actions/runner-images/blob/main/images/ubuntu/scripts/build/configure-system.sh
 RUN chmod -R 777 /opt /usr/share
 
-WORKDIR /actions-runner
-COPY install_actions.sh /actions-runner
+# WORKDIR /actions-runner
+# COPY install_actions.sh /actions-runner
 
-RUN chmod +x /actions-runner/install_actions.sh \
-  && /actions-runner/install_actions.sh ${GH_RUNNER_VERSION} ${TARGETPLATFORM} \
-  && rm /actions-runner/install_actions.sh \
-  && chown runner /_work /actions-runner /opt/hostedtoolcache
+# RUN chmod +x /actions-runner/install_actions.sh \
+#   && /actions-runner/install_actions.sh ${GH_RUNNER_VERSION} ${TARGETPLATFORM} \
+#   && rm /actions-runner/install_actions.sh \
+#   && chown runner /_work /actions-runner /opt/hostedtoolcache
 
 COPY token.sh entrypoint.sh app_token.sh /
 RUN chmod +x /token.sh /entrypoint.sh /app_token.sh
-# https://github.com/containers/buildah/issues/3666#issuecomment-1351992335
-VOLUME /var/lib/containers
+# # https://github.com/containers/buildah/issues/3666#issuecomment-1351992335
+# VOLUME /var/lib/containers
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["./bin/Runner.Listener", "run", "--startuptype", "service"]
