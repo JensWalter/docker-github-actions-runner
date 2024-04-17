@@ -11,7 +11,7 @@ RUN addgroup -S runner && adduser -S runner -G runner && mkdir -p /etc/sudoers.d
 
 RUN apk add -q --no-cache curl git unzip sudo jq bash openssl gcompat nodejs tar
 # basic dev tools
-RUN apk add -q --no-cache build-base musl-dev linux-headers dotnet7-sdk aspnetcore7-runtime dotnet7-runtime dumb-init
+RUN apk add -q --no-cache build-base musl-dev linux-headers dotnet7-sdk aspnetcore7-runtime dotnet7-runtime dotnet6-sdk aspnetcore6-runtime dotnet6-runtime dumb-init
 
 # Install dotnet
 # https://github.com/actions/runner/blob/main/docs/start/envlinux.md#install-net-core-3x-linux-dependencies
