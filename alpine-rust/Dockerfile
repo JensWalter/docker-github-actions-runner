@@ -20,6 +20,10 @@ RUN apk add -q --no-cache build-base musl-dev linux-headers
 
 # RUN export PATH=$HOME/.local/bin:$PATH
 
+ARG GH_RUNNER_VERSION="2.315.0"
+
+ARG TARGETPLATFORM
+
 WORKDIR /actions-runner
 RUN export RUNNER_ARCH=${TARGETARCH} \
     && if [ "$RUNNER_ARCH" = "amd64" ]; then export RUNNER_ARCH=x64 ; fi \
@@ -45,9 +49,6 @@ RUN mkdir -p /opt/hostedtoolcache
 
 # configure directory permissions; ref https://github.com/actions/runner-images/blob/main/images/ubuntu/scripts/build/configure-system.sh
 RUN chmod -R 777 /opt /usr/share
-
-WORKDIR /home/runner
-USER runner
 
 WORKDIR /actions-runner
 COPY install_actions.sh /actions-runner
