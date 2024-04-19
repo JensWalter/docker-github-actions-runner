@@ -25,11 +25,15 @@ ARG GH_RUNNER_VERSION="2.315.0"
 ARG TARGETPLATFORM
 
 WORKDIR /actions-runner
+ENV LD_LIBRARY_PATH=/usr/lib/dotnet/shared/Microsoft.NETCore.App/6.0.29/
+
 RUN export RUNNER_ARCH=${TARGETARCH} \
     && if [ "$RUNNER_ARCH" = "amd64" ]; then export RUNNER_ARCH=x64 ; fi \
     && curl -f -L -o runner.tar.gz "https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-${TARGETOS}-${RUNNER_ARCH}-${RUNNER_VERSION}.tar.gz" \
     && tar xzf ./runner.tar.gz \
-    && rm runner.tar.gz
+    && rm runner.tar.gz \
+    && rm ./bin/*.so
+
 
 RUN rm /actions-runner/externals/node16/bin/node && ln -s /usr/bin/node /actions-runner/externals/node16/bin/node
 RUN rm /actions-runner/externals/node20/bin/node && ln -s /usr/bin/node /actions-runner/externals/node20/bin/node
@@ -50,6 +54,8 @@ RUN mkdir -p /opt/hostedtoolcache
 # configure directory permissions; ref https://github.com/actions/runner-images/blob/main/images/ubuntu/scripts/build/configure-system.sh
 RUN chmod -R 777 /opt /usr/share
 
+RUN mkdir /_work
+
 # WORKDIR /actions-runner
 # COPY install_actions.sh /actions-runner
 
@@ -63,5 +69,6 @@ RUN chmod +x /token.sh /entrypoint.sh /app_token.sh
 # # https://github.com/containers/buildah/issues/3666#issuecomment-1351992335
 # VOLUME /var/lib/containers
 
+
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["./bin/Runner.Listener", "run", "--startuptype", "service"]
+CMD ["/actions-runner/bin/Runner.Listener", "run", "--startuptype", "service"]
