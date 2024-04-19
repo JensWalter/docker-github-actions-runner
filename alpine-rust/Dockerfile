@@ -7,9 +7,17 @@ ARG RUNNER_VERSION=2.315.0
 ARG RUNNER_CONTAINER_HOOKS_VERSION=0.5.0
 ARG DOTNET_VERSION=7
 
+ENV \
+    # Configure web servers to bind to port 80 when present
+    ASPNETCORE_URLS=http://+:80 \
+    # Enable detection of running in a container
+    DOTNET_RUNNING_IN_CONTAINER=true \
+    # Set the invariant mode since ICU package isn't included (see https://github.com/dotnet/announcements/issues/20)
+    DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=true
+    
 RUN addgroup -S runner && adduser -S runner -G runner && mkdir -p /etc/sudoers.d && echo "runner ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/runner && chmod 0440 /etc/sudoers.d/runner
 
-RUN apk add -q --no-cache curl git unzip sudo jq bash openssl gcompat nodejs tar
+RUN apk add -q --no-cache curl git unzip sudo jq bash openssl gcompat nodejs tar libintl ca-certificates krb5-libs libgcc libssl3 libstdc++ zlib icu
 # basic dev tools
 RUN apk add -q --no-cache build-base musl-dev linux-headers dotnet7-sdk aspnetcore7-runtime dotnet7-runtime dotnet6-sdk aspnetcore6-runtime dotnet6-runtime dumb-init
 
@@ -25,15 +33,14 @@ ARG GH_RUNNER_VERSION="2.315.0"
 ARG TARGETPLATFORM
 
 WORKDIR /actions-runner
-ENV LD_LIBRARY_PATH=/usr/lib/dotnet/shared/Microsoft.NETCore.App/6.0.29/
 
 RUN export RUNNER_ARCH=${TARGETARCH} \
     && if [ "$RUNNER_ARCH" = "amd64" ]; then export RUNNER_ARCH=x64 ; fi \
     && curl -f -L -o runner.tar.gz "https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-${TARGETOS}-${RUNNER_ARCH}-${RUNNER_VERSION}.tar.gz" \
     && tar xzf ./runner.tar.gz \
-    && rm runner.tar.gz \
-    && rm ./bin/*.so
+    && rm runner.tar.gz 
 
+RUN cp /usr/lib/dotnet/shared/Microsoft.NETCore.App/6.0.29/*.so /actions-runner/bin
 
 RUN rm /actions-runner/externals/node16/bin/node && ln -s /usr/bin/node /actions-runner/externals/node16/bin/node
 RUN rm /actions-runner/externals/node20/bin/node && ln -s /usr/bin/node /actions-runner/externals/node20/bin/node
