@@ -8,7 +8,6 @@ ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US.UTF-8
 ENV LC_ALL=en_US.UTF-8
 ENV PKG_CONFIG_PATH=/opt/local/lib/pkgconfig
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ENV DEBIAN_FRONTEND=noninteractive
 # hadolint ignore=SC2086,DL3015,DL3008,DL3013,SC2015
 RUN echo en_US.UTF-8 UTF-8 >> /etc/locale.gen \
@@ -95,8 +94,6 @@ RUN mkdir -p /opt/hostedtoolcache
 ARG GH_RUNNER_VERSION="2.317.0"
 
 ARG TARGETPLATFORM
-
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 WORKDIR /actions-runner
 COPY install_actions.sh /actions-runner
