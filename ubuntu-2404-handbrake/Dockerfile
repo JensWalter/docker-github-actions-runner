@@ -82,12 +82,6 @@ RUN echo en_US.UTF-8 UTF-8 >> /etc/locale.gen \
   && echo '%sudo ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers \
   && ( [[ -f /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list ]] && rm /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list || : )
 
-# aws cli
-RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
-  && unzip awscliv2.zip \
-  && ./aws/install \
-  && rm -rf ./aws
-
 ENV AGENT_TOOLSDIRECTORY=/opt/hostedtoolcache
 RUN mkdir -p /opt/hostedtoolcache
 
