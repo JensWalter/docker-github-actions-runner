@@ -1,6 +1,8 @@
 name: ubuntu-2204-rust-musl
 on:
   workflow_dispatch:
+  schedule:
+    - cron:  '30 14 * * 0,2,4'
   push:
     branches:
     - main
