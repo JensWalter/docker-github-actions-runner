@@ -103,13 +103,6 @@ RUN echo en_US.UTF-8 UTF-8 >> /etc/locale.gen \
   && echo '%sudo ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers \
   && ( [[ -f /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list ]] && rm /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list || : )
 
-RUN apt-get update && apt-get install -y crun podman \
-    criu libnet1 \
-    libprotobuf-c1 \
-    libprotobuf23 \
-    python3-protobuf \
-    conmon 
-
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
 COPY --from=rustcache /root/.cargo /root/.cargo
 ENV PATH="/root/.cargo/bin:${PATH}"
