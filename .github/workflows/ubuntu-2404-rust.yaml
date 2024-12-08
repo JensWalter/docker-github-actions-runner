@@ -7,7 +7,7 @@ on:
     branches:
     - main
     paths:
-      - 'ubuntu-2204-rust/*'
+      - 'ubuntu-2404-rust/*'
 jobs:
   build:
     permissions: write-all
