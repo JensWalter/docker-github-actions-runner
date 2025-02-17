@@ -102,7 +102,7 @@ RUN rustup default stable-musl
 ENV AGENT_TOOLSDIRECTORY=/opt/hostedtoolcache
 RUN mkdir -p /opt/hostedtoolcache
 
-ARG GH_RUNNER_VERSION="2.321.0"
+ARG GH_RUNNER_VERSION="2.322.0"
 
 ARG TARGETPLATFORM
 
