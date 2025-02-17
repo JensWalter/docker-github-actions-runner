@@ -1,4 +1,4 @@
-FROM ubuntu:24.04 as rustcache
+FROM ubuntu:24.04 AS rustcache
 RUN apt-get update \
   && apt-get install -y curl tar unzip gcc make ca-certificates pkg-config libssl-dev cmake
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
@@ -6,9 +6,9 @@ ENV PATH="/root/.cargo/bin:${PATH}"
 # do demo project
 WORKDIR /root/abc
 RUN cargo init
-RUN cargo add adler atoi aws-config axum base64 cached chrono crc dtz-identity-auth either env_logger env-var flate2 futures hex include_dir is-terminal jwt lock_api log miniz_oxide nix num_cpus nom parking_lot paste reqwest scopeguard sqlx tokio tower-http urlencoding webpki-roots xmlparser zstd  && cargo build 
+RUN cargo add adler atoi aws-config axum base64 cached chrono crc dtz-identity-auth either env_logger flate2 futures hex include_dir is-terminal jwt lock_api log miniz_oxide nix num_cpus nom parking_lot paste reqwest scopeguard sqlx tokio tower-http urlencoding webpki-roots xmlparser zstd  && cargo build 
 
-FROM ubuntu:24.04 as builder
+FROM ubuntu:24.04 AS builder
 
 ARG DUMB_INIT_VERSION="1.2.2"
 ARG GIT_CORE_PPA_KEY="A1715D88E1DF1F24"
@@ -23,42 +23,37 @@ ENV DEBIAN_FRONTEND=noninteractive
 # hadolint ignore=SC2086,DL3015,DL3008,DL3013,SC2015
 RUN echo en_US.UTF-8 UTF-8 >> /etc/locale.gen \
   && apt-get update \
-  && apt-get install -y --no-install-recommends gnupg \
+  && apt-get install -y --no-install-recommends gnupg curl tar unzip zip zstd ca-certificates \
   && ( \
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys ${GIT_CORE_PPA_KEY} \
       || apt-key adv --keyserver pgp.mit.edu --recv-keys ${GIT_CORE_PPA_KEY} \
       || apt-key adv --keyserver keyserver.pgp.com --recv-keys ${GIT_CORE_PPA_KEY} \
-  ) \
-  && apt-get update \
+  )
+RUN apt-get update \
   && apt-get install -y --no-install-recommends \
     gnupg \
     lsb-release \
-    curl \
-    tar \
-    unzip \
-    zip \
     gcc \
     make \
     apt-transport-https \
-    ca-certificates \
     sudo \
     gpg-agent \
     software-properties-common \
     build-essential \
     zlib1g-dev \
-    zstd \
     gettext \
     libcurl4-openssl-dev \
     inetutils-ping \
-    jq \
-    wget \
     dirmngr \
     openssh-client \
-    locales \
+    locales
+RUN  apt-get install -y --no-install-recommends \
     python3-pip \
     python3-setuptools \
     python3-venv \
     python3 \
+    jq \
+    wget \
     dumb-init \
     nodejs \
     rsync \
@@ -70,7 +65,8 @@ RUN echo en_US.UTF-8 UTF-8 >> /etc/locale.gen \
   && DPKG_ARCH="$(dpkg --print-architecture)" \
   && LSB_RELEASE_CODENAME="$(lsb_release --codename | cut -f2)" \
   && sed -e 's/Defaults.*env_reset/Defaults env_keep = "HTTP_PROXY HTTPS_PROXY NO_PROXY FTP_PROXY http_proxy https_proxy no_proxy ftp_proxy"/' -i /etc/sudoers \
-  && echo deb http://ppa.launchpad.net/git-core/ppa/ubuntu $([[ $(grep -E '^ID=' /etc/os-release | sed 's/.*=//g') == "ubuntu" ]] && (grep VERSION_CODENAME /etc/os-release | sed 's/.*=//g') || echo bionic) main>/etc/apt/sources.list.d/git-core.list \
+  && echo deb http://ppa.launchpad.net/git-core/ppa/ubuntu $([[ $(grep -E '^ID=' /etc/os-release | sed 's/.*=//g') == "ubuntu" ]] && (grep VERSION_CODENAME /etc/os-release | sed 's/.*=//g') || echo bionic) main>/etc/apt/sources.list.d/git-core.list
+RUN DPKG_ARCH="$(dpkg --print-architecture)" \
   && apt-get update \
   && ( apt-get install -y --no-install-recommends git || apt-get install -t stable -y --no-install-recommends git || apt-get install -y --no-install-recommends git=1:2.33.1-0ppa1~ubuntu18.04.1 git-man=1:2.33.1-0ppa1~ubuntu18.04.1 ) \
   && ( [[ $(apt-cache search -n liblttng-ust0 | awk '{print $1}') == "liblttng-ust0" ]] && apt-get install -y --no-install-recommends liblttng-ust0 || : ) \
@@ -81,7 +77,8 @@ RUN echo en_US.UTF-8 UTF-8 >> /etc/locale.gen \
   && mkdir -p /etc/apt/keyrings \
   && ( curl -fsSL https://download.docker.com/linux/${distro}/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg ) \
   && version=$(lsb_release -cs | sed 's/trixie\|n\/a/bookworm/g') \
-  && ( echo "deb [arch=${DPKG_ARCH} signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/${distro} ${version} stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null ) \
+  && ( echo "deb [arch=${DPKG_ARCH} signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/${distro} ${version} stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null )
+RUN DPKG_ARCH="$(dpkg --print-architecture)" \
   && apt-get update \
   && apt-get install -y docker-ce docker-ce-cli docker-buildx-plugin containerd.io docker-compose-plugin --no-install-recommends --allow-unauthenticated \
   && echo -e '#!/bin/sh\ndocker compose --compatibility "$@"' > /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose \
@@ -103,7 +100,7 @@ RUN echo en_US.UTF-8 UTF-8 >> /etc/locale.gen \
   && echo '%sudo ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers \
   && ( [[ -f /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list ]] && rm /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list || : )
 
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y --profile=minimal
 COPY --from=rustcache /root/.cargo /root/.cargo
 ENV PATH="/root/.cargo/bin:${PATH}"
 
