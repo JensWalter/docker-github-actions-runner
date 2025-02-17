@@ -1,4 +1,4 @@
-FROM ubuntu:22.04 as builder
+FROM ubuntu:22.04 AS builder
 
 ARG DUMB_INIT_VERSION="1.2.2"
 ARG GIT_CORE_PPA_KEY="A1715D88E1DF1F24"

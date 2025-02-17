@@ -14,52 +14,47 @@ ENV DPKG_ARCH=amd64
 RUN echo en_US.UTF-8 UTF-8 >> /etc/locale.gen \
   && apt-get update \
   && apt-get install -y --no-install-recommends gnupg \
-  && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys ${GIT_CORE_PPA_KEY} \
-  && apt-get update \
-  && apt-get install -y --no-install-recommends \
-    gnupg \
-    lsb-release \
     curl \
     tar \
     unzip \
     zip \
-    apt-transport-https \
     ca-certificates \
-    sudo \
-    gpg-agent \
-    software-properties-common \
     build-essential \
     pkg-config \
-    zlib1g-dev \
+    sudo \
+    openssh-client \
+    locales \
+    libpq-dev \
+    libssl-dev \
+    gpg-agent \
     zstd \
+    jq \
+    wget git git-lfs
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys ${GIT_CORE_PPA_KEY} \
+  && apt-get update \
+  && apt-get install -y --no-install-recommends \
+    gnupg \
+    rsync \
+    lsb-release \ 
+    apt-transport-https \
+    software-properties-common \
+    zlib1g-dev \
     gettext \
     libcurl4-openssl-dev \
     inetutils-ping \
-    jq \
-    wget \
     dirmngr \
-    openssh-client \
-    locales \
     python3-pip \
+    nodejs \
     python3-setuptools \
     python3 \
     dumb-init \
-    nodejs \
-    rsync \
-    libpq-dev \
-    libssl-dev \
     handbrake-cli \
-    gosu git git-lfs
+    gosu 
 
 RUN export LSB_RELEASE_CODENAME="$(lsb_release --codename | cut -f2)" 
 RUN sed -e 's/Defaults.*env_reset/Defaults env_keep = "HTTP_PROXY HTTPS_PROXY NO_PROXY FTP_PROXY http_proxy https_proxy no_proxy ftp_proxy"/' -i /etc/sudoers 
-# RUN echo deb http://ppa.launchpad.net/git-core/ppa/ubuntu $([[ $(grep -E '^ID=' /etc/os-release | sed 's/.*=//g') == "ubuntu" ]] && (grep VERSION_CODENAME /etc/os-release | sed 's/.*=//g') || echo oracular) main>/etc/apt/sources.list.d/git-core.list
 RUN apt-get update 
-# RUN ( apt-get install -y --no-install-recommends git || apt-get install -t stable -y --no-install-recommends git || apt-get install -y --no-install-recommends git=1:2.33.1-0ppa1~ubuntu18.04.1 git-man=1:2.33.1-0ppa1~ubuntu18.04.1 ) 
-# RUN ( [[ $(apt-cache search -n liblttng-ust0 | awk '{print $1}') == "liblttng-ust0" ]] && apt-get install -y --no-install-recommends liblttng-ust0 || : ) 
-# RUN ( [[ $(apt-cache search -n liblttng-ust1 | awk '{print $1}') == "liblttng-ust1" ]] && apt-get install -y --no-install-recommends liblttng-ust1 || : ) 
 RUN ( ( curl "https://awscli.amazonaws.com/awscli-exe-linux-$(uname -m).zip" -o "awscliv2.zip" && unzip awscliv2.zip -d /tmp/ && /tmp/aws/install && rm awscliv2.zip) || pip3 install --no-cache-dir awscli ) 
-# RUN ( curl -s "https://github.com/git-lfs/git-lfs/releases/download/v${GIT_LFS_VERSION}/git-lfs-linux-${DPKG_ARCH}-v${GIT_LFS_VERSION}.tar.gz" -L -o /tmp/lfs.tar.gz && tar -xzf /tmp/lfs.tar.gz -C /tmp && /tmp/git-lfs-${GIT_LFS_VERSION}/install.sh && rm -rf /tmp/lfs.tar.gz  /tmp/git-lfs-${GIT_LFS_VERSION}) 
 RUN mkdir -p /etc/apt/keyrings \
   && ( curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg ) \
   && version=$(lsb_release -cs | sed 's/trixie\|n\/a/oracular/g') \
@@ -69,8 +64,9 @@ RUN mkdir -p /etc/apt/keyrings \
   && echo -e '#!/bin/sh\ndocker compose --compatibility "$@"' > /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose \
   && ( [[ "${LSB_RELEASE_CODENAME}" == "focal" ]] && ( echo "deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_24.10/ /" | tee /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list && curl -L "https://build.opensuse.org/projects/devel:kubic/public_key" | apt-key add -; echo "deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_24.10/ /" | tee /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list && curl -L "https://build.opensuse.org/projects/devel:kubic/public_key" | apt-key add - && apt-get update) || : ) \
   && ( [[ "${LSB_RELEASE_CODENAME}" == "focal" || "${LSB_RELEASE_CODENAME}" == "jammy" || "${LSB_RELEASE_CODENAME}" == "sid" || "${LSB_RELEASE_CODENAME}" == "bullseye" ]] && apt-get install -y --no-install-recommends podman buildah skopeo || : ) \
-  && ( [[ "${LSB_RELEASE_CODENAME}" == "jammy" ]] && echo "Ubuntu Jammy is marked as beta. Please see https://github.com/actions/virtual-environments/issues/5490" || : ) \
-  && GH_CLI_VERSION=$(curl -sL -H "Accept: application/vnd.github+json"   https://api.github.com/repos/cli/cli/releases/latest | jq -r '.tag_name' | sed 's/^v//g') \
+  && ( [[ "${LSB_RELEASE_CODENAME}" == "jammy" ]] && echo "Ubuntu Jammy is marked as beta. Please see https://github.com/actions/virtual-environments/issues/5490" || : )
+# gh cli
+RUN  GH_CLI_VERSION=$(curl -sL -H "Accept: application/vnd.github+json"   https://api.github.com/repos/cli/cli/releases/latest | jq -r '.tag_name' | sed 's/^v//g') \
   && GH_CLI_DOWNLOAD_URL=$(curl -sL -H "Accept: application/vnd.github+json"   https://api.github.com/repos/cli/cli/releases/latest | jq ".assets[] | select(.name == \"gh_${GH_CLI_VERSION}_linux_${DPKG_ARCH}.deb\")" | jq -r '.browser_download_url') \
   && curl -sSLo /tmp/ghcli.deb ${GH_CLI_DOWNLOAD_URL} && apt-get -y install /tmp/ghcli.deb && rm /tmp/ghcli.deb \
   && rm -rf /var/lib/apt/lists/* \
