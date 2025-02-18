@@ -33,8 +33,6 @@ RUN apt-get update \
   && apt-get install -y --no-install-recommends \
     gnupg \
     lsb-release \
-    gcc \
-    make \
     apt-transport-https \
     sudo \
     gpg-agent \
@@ -46,12 +44,12 @@ RUN apt-get update \
     inetutils-ping \
     dirmngr \
     openssh-client \
-    locales
-RUN  apt-get install -y --no-install-recommends \
     python3-pip \
     python3-setuptools \
     python3-venv \
     python3 \
+    locales
+RUN  apt-get install -y --no-install-recommends \
     jq \
     wget \
     dumb-init \
@@ -61,6 +59,8 @@ RUN  apt-get install -y --no-install-recommends \
     gosu \
     libssl-dev \
     pkg-config \
+    gcc \
+    make \
     cmake \
   && DPKG_ARCH="$(dpkg --print-architecture)" \
   && LSB_RELEASE_CODENAME="$(lsb_release --codename | cut -f2)" \

@@ -1,4 +1,4 @@
-FROM ubuntu:24.04 as builder
+FROM ubuntu:24.04 AS builder
 
 ARG DUMB_INIT_VERSION="1.2.2"
 ARG GIT_CORE_PPA_KEY="A1715D88E1DF1F24"
@@ -13,41 +13,35 @@ ENV DEBIAN_FRONTEND=noninteractive
 # hadolint ignore=SC2086,DL3015,DL3008,DL3013,SC2015
 RUN echo en_US.UTF-8 UTF-8 >> /etc/locale.gen \
   && apt-get update \
-  && apt-get install -y --no-install-recommends gnupg \
+  && apt-get install -y --no-install-recommends gnupg curl tar unzip zip zstd ca-certificates \
   && ( \
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys ${GIT_CORE_PPA_KEY} \
       || apt-key adv --keyserver pgp.mit.edu --recv-keys ${GIT_CORE_PPA_KEY} \
       || apt-key adv --keyserver keyserver.pgp.com --recv-keys ${GIT_CORE_PPA_KEY} \
-  ) \
-  && apt-get update \
+  )
+RUN apt-get update \
   && apt-get install -y --no-install-recommends \
     gnupg \
     lsb-release \
-    curl \
-    tar \
-    unzip \
-    zip \
     apt-transport-https \
-    ca-certificates \
     sudo \
     gpg-agent \
     software-properties-common \
     build-essential \
     zlib1g-dev \
-    zstd \
     gettext \
     libcurl4-openssl-dev \
     inetutils-ping \
-    jq \
-    wget \
     dirmngr \
     openssh-client \
-    locales
-RUN  apt-get install -y --no-install-recommends \
     python3-pip \
     python3-setuptools \
     python3-venv \
     python3 \
+    locales
+RUN  apt-get install -y --no-install-recommends \
+    jq \
+    wget \
     dumb-init \
     nodejs \
     rsync \
