@@ -8,6 +8,7 @@ on:
     - main
     paths:
       - 'ubuntu-2404-rust/*'
+      - '.github/workflows/ubuntu-2404-rust.yaml'
 jobs:
   build:
     permissions: write-all

@@ -6,6 +6,7 @@ on:
     - main
     paths:
       - 'ubuntu-2410-handbrake/*'
+      - '.github/workflows/ubuntu-2410-handbrake.yaml'
 jobs:
   build:
     permissions: write-all
