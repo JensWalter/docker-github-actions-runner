@@ -1,0 +1,35 @@
+name: ubuntu-2404-rust
+on:
+  workflow_dispatch:
+  schedule:
+    - cron:  '38 14 * * 0,2,4'
+  push:
+    branches:
+    - main
+    paths:
+      - 'ubuntu-2404-rust/*'
+      - '.github/workflows/ubuntu-2404-rust.yaml'
+jobs:
+  build:
+    permissions: write-all
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: 'true'
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    - name: build runner
+      run: |
+        docker build -t d202c2e9.cr.dtz.dev/gh-ubuntu-2404 -f ubuntu-2204/Dockerfile .
+    - name: Login to d202c2e9.cr.dtz.dev
+      uses: docker/login-action@v3
+      with:
+        registry: d202c2e9.cr.dtz.dev
+        username: apikey
+        password: ${{ secrets.DTZ_API_KEY }}
+    - name: uploading image
+      timeout-minutes: 10
+      run: |
+        docker push d202c2e9.cr.dtz.dev/gh-ubuntu-2404:latest
+
