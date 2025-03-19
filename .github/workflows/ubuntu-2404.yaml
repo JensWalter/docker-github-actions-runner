@@ -2,7 +2,7 @@ name: ubuntu-2404
 on:
   workflow_dispatch:
   schedule:
-    - cron:  '38 14 * * 0,2,4'
+    - cron:  '38 14 * * 1,3'
   push:
     branches:
     - main
