@@ -107,7 +107,7 @@ ENV PATH="/root/.cargo/bin:${PATH}"
 ENV AGENT_TOOLSDIRECTORY=/opt/hostedtoolcache
 RUN mkdir -p /opt/hostedtoolcache
 
-ARG GH_RUNNER_VERSION="2.322.0"
+ARG GH_RUNNER_VERSION="2.324.0"
 
 ARG TARGETPLATFORM
 
