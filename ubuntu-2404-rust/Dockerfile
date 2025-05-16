@@ -54,11 +54,7 @@ RUN  apt-get install -y --no-install-recommends \
     pkg-config \
     gcc \
     make \
-    cmake \
-  && DPKG_ARCH="$(dpkg --print-architecture)" \
-  && LSB_RELEASE_CODENAME="$(lsb_release --codename | cut -f2)" \
-  && sed -e 's/Defaults.*env_reset/Defaults env_keep = "HTTP_PROXY HTTPS_PROXY NO_PROXY FTP_PROXY http_proxy https_proxy no_proxy ftp_proxy"/' -i /etc/sudoers \
-  && echo deb http://ppa.launchpad.net/git-core/ppa/ubuntu $([[ $(grep -E '^ID=' /etc/os-release | sed 's/.*=//g') == "ubuntu" ]] && (grep VERSION_CODENAME /etc/os-release | sed 's/.*=//g') || echo bionic) main>/etc/apt/sources.list.d/git-core.list
+    cmake
 RUN DPKG_ARCH="$(dpkg --print-architecture)" \
   && apt-get update \
   && apt-get install -y --no-install-recommends git \
