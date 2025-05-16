@@ -10,9 +10,6 @@ RUN cargo add adler atoi aws-config axum base64 cached chrono crc dtz-identity-a
 
 FROM ubuntu:24.04 AS builder
 
-ARG DUMB_INIT_VERSION="1.2.2"
-ARG GIT_CORE_PPA_KEY="A1715D88E1DF1F24"
-
 ENV GIT_LFS_VERSION="3.5.1"
 ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US.UTF-8
@@ -23,12 +20,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 # hadolint ignore=SC2086,DL3015,DL3008,DL3013,SC2015
 RUN echo en_US.UTF-8 UTF-8 >> /etc/locale.gen \
   && apt-get update \
-  && apt-get install -y --no-install-recommends gnupg curl tar unzip zip zstd ca-certificates \
-  && ( \
-    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys ${GIT_CORE_PPA_KEY} \
-      || apt-key adv --keyserver pgp.mit.edu --recv-keys ${GIT_CORE_PPA_KEY} \
-      || apt-key adv --keyserver keyserver.pgp.com --recv-keys ${GIT_CORE_PPA_KEY} \
-  )
+  && apt-get install -y --no-install-recommends gnupg curl tar unzip zip zstd ca-certificates
+
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
     gnupg \
@@ -68,7 +61,7 @@ RUN  apt-get install -y --no-install-recommends \
   && echo deb http://ppa.launchpad.net/git-core/ppa/ubuntu $([[ $(grep -E '^ID=' /etc/os-release | sed 's/.*=//g') == "ubuntu" ]] && (grep VERSION_CODENAME /etc/os-release | sed 's/.*=//g') || echo bionic) main>/etc/apt/sources.list.d/git-core.list
 RUN DPKG_ARCH="$(dpkg --print-architecture)" \
   && apt-get update \
-  && ( apt-get install -y --no-install-recommends git || apt-get install -t stable -y --no-install-recommends git || apt-get install -y --no-install-recommends git=1:2.33.1-0ppa1~ubuntu18.04.1 git-man=1:2.33.1-0ppa1~ubuntu18.04.1 ) \
+  && apt-get install -y --no-install-recommends git \
   && ( [[ $(apt-cache search -n liblttng-ust0 | awk '{print $1}') == "liblttng-ust0" ]] && apt-get install -y --no-install-recommends liblttng-ust0 || : ) \
   && ( [[ $(apt-cache search -n liblttng-ust1 | awk '{print $1}') == "liblttng-ust1" ]] && apt-get install -y --no-install-recommends liblttng-ust1 || : ) \
   && ( ( curl "https://awscli.amazonaws.com/awscli-exe-linux-$(uname -m).zip" -o "awscliv2.zip" && unzip awscliv2.zip -d /tmp/ && /tmp/aws/install && rm awscliv2.zip) || pip3 install --no-cache-dir awscli ) \
