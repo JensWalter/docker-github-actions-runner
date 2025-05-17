@@ -89,7 +89,9 @@ RUN DPKG_ARCH="$(dpkg --print-architecture)" \
   && echo '%sudo ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers \
   && ( [[ -f /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list ]] && rm /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list || : )
 
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y --profile=minimal
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y --profile=minimal \
+  && rm -rf /root/.rustup \
+  && rm -rf /root/.cargo
 COPY --from=rustcache /root/.cargo /root/.cargo
 ENV PATH="/root/.cargo/bin:${PATH}"
 
