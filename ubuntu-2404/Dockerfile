@@ -90,7 +90,7 @@ RUN DPKG_ARCH="$(dpkg --print-architecture)" \
 ENV AGENT_TOOLSDIRECTORY=/opt/hostedtoolcache
 RUN mkdir -p /opt/hostedtoolcache
 
-ARG GH_RUNNER_VERSION="2.324.0"
+ARG GH_RUNNER_VERSION="2.325.0"
 
 ARG TARGETPLATFORM
 
