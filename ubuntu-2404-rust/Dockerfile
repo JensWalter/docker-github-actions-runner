@@ -10,7 +10,7 @@ RUN cargo add adler atoi aws-config axum base64 cached chrono crc dtz-identity-a
 
 FROM ubuntu:24.04 AS builder
 
-ENV GIT_LFS_VERSION="3.5.1"
+ENV GIT_LFS_VERSION="3.7.0"
 ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US.UTF-8
 ENV LC_ALL=en_US.UTF-8
