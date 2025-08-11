@@ -51,24 +51,16 @@ RUN DPKG_ARCH="$(dpkg --print-architecture)" \
   && ( curl -s "https://github.com/git-lfs/git-lfs/releases/download/v${GIT_LFS_VERSION}/git-lfs-linux-${DPKG_ARCH}-v${GIT_LFS_VERSION}.tar.gz" -L -o /tmp/lfs.tar.gz && tar -xzf /tmp/lfs.tar.gz -C /tmp && /tmp/git-lfs-${GIT_LFS_VERSION}/install.sh && rm -rf /tmp/lfs.tar.gz  /tmp/git-lfs-${GIT_LFS_VERSION}) \
   && distro=$(lsb_release -is | awk '{print tolower($0)}') \
   && mkdir -p /etc/apt/keyrings \
-  && ( curl -fsSL https://download.docker.com/linux/${distro}/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg ) \
-  && version=$(lsb_release -cs | sed 's/trixie\|n\/a/bookworm/g') \
-  && ( echo "deb [arch=${DPKG_ARCH} signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/${distro} ${version} stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null ) \
   && rm -rf /var/lib/apt/lists/* \
   && rm -rf /tmp/*
 RUN DPKG_ARCH="$(dpkg --print-architecture)" \
   && apt-get update \
-  && apt-get install -y docker-ce docker-ce-cli docker-buildx-plugin containerd.io docker-compose-plugin --no-install-recommends --allow-unauthenticated \
-  && echo -e '#!/bin/sh\ndocker compose --compatibility "$@"' > /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose \
   && GH_CLI_VERSION=$(curl -sL -H "Accept: application/vnd.github+json"   https://api.github.com/repos/cli/cli/releases/latest | jq -r '.tag_name' | sed 's/^v//g') \
   && GH_CLI_DOWNLOAD_URL=$(curl -sL -H "Accept: application/vnd.github+json"   https://api.github.com/repos/cli/cli/releases/latest | jq ".assets[] | select(.name == \"gh_${GH_CLI_VERSION}_linux_${DPKG_ARCH}.deb\")" | jq -r '.browser_download_url') \
   && curl -sSLo /tmp/ghcli.deb ${GH_CLI_DOWNLOAD_URL} && apt-get -y install /tmp/ghcli.deb && rm /tmp/ghcli.deb \
-  && rm -rf /var/lib/apt/lists/* \
-  && rm -rf /tmp/* \
   && groupadd -g 121 runner \
   && useradd -mr -d /home/runner -u 1001 -g 121 runner \
   && usermod -aG sudo runner \
-  && usermod -aG docker runner \
   && echo '%sudo ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers \
   && rm -rf /var/lib/apt/lists/* \
   && rm -rf /tmp/*
