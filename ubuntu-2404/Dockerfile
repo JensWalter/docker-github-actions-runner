@@ -1,20 +1,19 @@
 FROM ubuntu:24.04 AS builder
 
-ENV GIT_LFS_VERSION="3.5.1"
+ENV GIT_LFS_VERSION="3.7.0"
 ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US.UTF-8
 ENV LC_ALL=en_US.UTF-8
 ENV PKG_CONFIG_PATH=/opt/local/lib/pkgconfig
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ENV DEBIAN_FRONTEND=noninteractive
-# hadolint ignore=SC2086,DL3015,DL3008,DL3013,SC2015
 RUN echo en_US.UTF-8 UTF-8 >> /etc/locale.gen \
   && apt-get update \
-  && apt-get install -y --no-install-recommends gnupg curl tar unzip zip zstd ca-certificates
+  && apt-get install -y --no-install-recommends gnupg curl tar unzip zip zstd ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
-    gnupg \
     lsb-release \
     apt-transport-https \
     sudo \
@@ -31,8 +30,10 @@ RUN apt-get update \
     python3-setuptools \
     python3-venv \
     python3 \
-    locales
-RUN  apt-get install -y --no-install-recommends \
+    locales \
+  && rm -rf /var/lib/apt/lists/*
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
     jq \
     wget \
     dumb-init \
@@ -41,19 +42,20 @@ RUN  apt-get install -y --no-install-recommends \
     libpq-dev \
     gosu \
     libssl-dev \
-    pkg-config
+    pkg-config \
+    git \
+  && rm -rf /var/lib/apt/lists/*
 RUN DPKG_ARCH="$(dpkg --print-architecture)" \
   && apt-get update \
-  && apt-get install -y --no-install-recommends git \
-  && ( [[ $(apt-cache search -n liblttng-ust0 | awk '{print $1}') == "liblttng-ust0" ]] && apt-get install -y --no-install-recommends liblttng-ust0 || : ) \
-  && ( [[ $(apt-cache search -n liblttng-ust1 | awk '{print $1}') == "liblttng-ust1" ]] && apt-get install -y --no-install-recommends liblttng-ust1 || : ) \
   && ( ( curl "https://awscli.amazonaws.com/awscli-exe-linux-$(uname -m).zip" -o "awscliv2.zip" && unzip awscliv2.zip -d /tmp/ && /tmp/aws/install && rm awscliv2.zip) || pip3 install --no-cache-dir awscli ) \
   && ( curl -s "https://github.com/git-lfs/git-lfs/releases/download/v${GIT_LFS_VERSION}/git-lfs-linux-${DPKG_ARCH}-v${GIT_LFS_VERSION}.tar.gz" -L -o /tmp/lfs.tar.gz && tar -xzf /tmp/lfs.tar.gz -C /tmp && /tmp/git-lfs-${GIT_LFS_VERSION}/install.sh && rm -rf /tmp/lfs.tar.gz  /tmp/git-lfs-${GIT_LFS_VERSION}) \
   && distro=$(lsb_release -is | awk '{print tolower($0)}') \
   && mkdir -p /etc/apt/keyrings \
   && ( curl -fsSL https://download.docker.com/linux/${distro}/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg ) \
   && version=$(lsb_release -cs | sed 's/trixie\|n\/a/bookworm/g') \
-  && ( echo "deb [arch=${DPKG_ARCH} signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/${distro} ${version} stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null )
+  && ( echo "deb [arch=${DPKG_ARCH} signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/${distro} ${version} stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null ) \
+  && rm -rf /var/lib/apt/lists/* \
+  && rm -rf /tmp/*
 RUN DPKG_ARCH="$(dpkg --print-architecture)" \
   && apt-get update \
   && apt-get install -y docker-ce docker-ce-cli docker-buildx-plugin containerd.io docker-compose-plugin --no-install-recommends --allow-unauthenticated \
@@ -67,7 +69,9 @@ RUN DPKG_ARCH="$(dpkg --print-architecture)" \
   && useradd -mr -d /home/runner -u 1001 -g 121 runner \
   && usermod -aG sudo runner \
   && usermod -aG docker runner \
-  && echo '%sudo ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+  && echo '%sudo ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers \
+  && rm -rf /var/lib/apt/lists/* \
+  && rm -rf /tmp/*
 
 ENV AGENT_TOOLSDIRECTORY=/opt/hostedtoolcache
 RUN mkdir -p /opt/hostedtoolcache
@@ -88,8 +92,6 @@ RUN chmod +x /actions-runner/install_actions.sh \
 
 COPY token.sh entrypoint.sh app_token.sh /
 RUN chmod +x /token.sh /entrypoint.sh /app_token.sh
-# https://github.com/containers/buildah/issues/3666#issuecomment-1351992335
-VOLUME /var/lib/containers
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["./bin/Runner.Listener", "run", "--startuptype", "service"]
