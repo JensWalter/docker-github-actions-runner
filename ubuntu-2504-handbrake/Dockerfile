@@ -73,7 +73,7 @@ RUN groupadd -g 121 runner \
 ENV AGENT_TOOLSDIRECTORY=/opt/hostedtoolcache
 RUN mkdir -p /opt/hostedtoolcache
 
-ARG GH_RUNNER_VERSION="2.326.0"
+ARG GH_RUNNER_VERSION="2.327.1"
 
 ARG TARGETPLATFORM
 
