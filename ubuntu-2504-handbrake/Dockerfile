@@ -1,44 +1,43 @@
 FROM ubuntu:25.04 AS builder
 
-ENV GIT_LFS_VERSION="3.7.0"
 ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US.UTF-8
 ENV LC_ALL=en_US.UTF-8
 ENV PKG_CONFIG_PATH=/opt/local/lib/pkgconfig
 ENV DEBIAN_FRONTEND=noninteractive
 ENV DPKG_ARCH=amd64
-# hadolint ignore=SC2086,DL3015,DL3008,DL3013,SC2015
+
 RUN echo en_US.UTF-8 UTF-8 >> /etc/locale.gen \
-  && apt-get update \
-  && apt-get install -y --no-install-recommends gnupg \
+  && apt update \
+  && apt install -y --no-install-recommends \
     curl \
     tar \
     unzip \
     zip \
     ca-certificates \
-    build-essential \
-    pkg-config \
     sudo \
-    openssh-client \
-    locales \
-    libpq-dev \
-    libssl-dev \
-    gpg-agent \
     zstd \
     jq \
-    wget git git-lfs
-RUN apt-get update \
-  && apt-get install -y --no-install-recommends \
-    gnupg \
-    lsb-release \ 
-    apt-transport-https \
-    software-properties-common \
-    gettext \
-    inetutils-ping \
-    dirmngr \
+    locales \
+    python3-pip \
+    python3-setuptools \
+    python3 \
+    libicu76 \
+    git \
+    wget \
+    gosu \
     dumb-init \
-    handbrake-cli \
-    gosu 
+    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends handbrake-cli \
+    && rm -rf /var/lib/apt/lists/*
+# install nodejs 24
+RUN wget -q -O- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash \
+   && /bin/bash -c "source /root/.nvm/nvm.sh && nvm install 24" \
+   && rm -rf /root/.nvm/.cache
+# install awscli
+RUN ( ( curl "https://awscli.amazonaws.com/awscli-exe-linux-$(uname -m).zip" -o "awscliv2.zip" && unzip awscliv2.zip -d /tmp/ && /tmp/aws/install && rm awscliv2.zip) || pip3 install --no-cache-dir awscli ) \
+  && rm -rf /tmp/*
 
 # gh-user
 RUN groupadd -g 121 runner \
@@ -50,23 +49,22 @@ RUN groupadd -g 121 runner \
 ENV AGENT_TOOLSDIRECTORY=/opt/hostedtoolcache
 RUN mkdir -p /opt/hostedtoolcache
 
-ARG GH_RUNNER_VERSION="2.327.1"
-
-ARG TARGETPLATFORM
-
 WORKDIR /actions-runner
 COPY install_actions.sh /actions-runner
 
+ARG TARGETPLATFORM
+
 RUN chmod +x /actions-runner/install_actions.sh \
-  && /actions-runner/install_actions.sh ${GH_RUNNER_VERSION} ${TARGETPLATFORM} \
+  && /actions-runner/install_actions.sh "2.327.1" ${TARGETPLATFORM} \
   && rm /actions-runner/install_actions.sh \
-  && chown runner /_work /actions-runner /opt/hostedtoolcache
+  && chown runner /_work /actions-runner /opt/hostedtoolcache \
+  && rm -rf /actions-runner/externals/node20_alpine \
+  && rm -rf /actions-runner/externals/node20 \
+  && rm -rf /actions-runner/externals/node24_alpine
 
 COPY token.sh entrypoint.sh app_token.sh /
 
 RUN chmod +x /token.sh /entrypoint.sh /app_token.sh
-# https://github.com/containers/buildah/issues/3666#issuecomment-1351992335
-VOLUME /var/lib/containers
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["./bin/Runner.Listener", "run", "--startuptype", "service"]
