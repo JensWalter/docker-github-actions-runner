@@ -113,7 +113,6 @@ RUN chmod +x /actions-runner/install_actions.sh \
   && rm /actions-runner/install_actions.sh \
   && chown runner /_work /actions-runner /opt/hostedtoolcache \
   && rm -rf /actions-runner/externals/node20_alpine \
-  && rm -rf /actions-runner/externals/node20 \
   && rm -rf /actions-runner/externals/node24_alpine
 
 COPY token.sh entrypoint.sh app_token.sh /
