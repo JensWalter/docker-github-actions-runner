@@ -37,7 +37,6 @@ RUN apt-get update \
     jq \
     wget \
     dumb-init \
-    nodejs \
     rsync \
     libpq-dev \
     gosu \
@@ -45,6 +44,9 @@ RUN apt-get update \
     pkg-config \
     git \
   && rm -rf /var/lib/apt/lists/*
+# install nodejs 24
+RUN wget -q -O- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash \
+   && source "/root/.nvm/nvm.sh" && nvm install 24 
 RUN DPKG_ARCH="$(dpkg --print-architecture)" \
   && apt-get update \
   && ( ( curl "https://awscli.amazonaws.com/awscli-exe-linux-$(uname -m).zip" -o "awscliv2.zip" && unzip awscliv2.zip -d /tmp/ && /tmp/aws/install && rm awscliv2.zip) || pip3 install --no-cache-dir awscli ) \
