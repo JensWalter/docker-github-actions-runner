@@ -10,19 +10,21 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN echo en_US.UTF-8 UTF-8 >> /etc/locale.gen \
   && apt-get update \
   && apt-get install -y --no-install-recommends gnupg curl tar unzip zip zstd ca-certificates \
-  && rm -rf /var/lib/apt/lists/*
-
+      lsb-release \
+      apt-transport-https \
+      sudo \
+      libcurl4-openssl-dev \
+      gpg-agent \
+      software-properties-common \
+      zlib1g-dev \
+      gettext \
+      && rm -rf /var/lib/apt/lists/*
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
-    lsb-release \
-    apt-transport-https \
-    sudo \
-    gpg-agent \
-    software-properties-common \
     build-essential \
-    zlib1g-dev \
-    gettext \
-    libcurl4-openssl-dev \
+  && rm -rf /var/lib/apt/lists/*
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
     inetutils-ping \
     dirmngr \
     openssh-client \
@@ -46,7 +48,8 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 # install nodejs 24
 RUN wget -q -O- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash \
-   && source "/root/.nvm/nvm.sh" && nvm install 24 
+   && /bin/bash -c "source /root/.nvm/nvm.sh && nvm install 24" \
+   && rm -rf /root/.nvm/.cache
 RUN DPKG_ARCH="$(dpkg --print-architecture)" \
   && apt-get update \
   && ( ( curl "https://awscli.amazonaws.com/awscli-exe-linux-$(uname -m).zip" -o "awscliv2.zip" && unzip awscliv2.zip -d /tmp/ && /tmp/aws/install && rm awscliv2.zip) || pip3 install --no-cache-dir awscli ) \
@@ -70,19 +73,20 @@ RUN DPKG_ARCH="$(dpkg --print-architecture)" \
 ENV AGENT_TOOLSDIRECTORY=/opt/hostedtoolcache
 RUN mkdir -p /opt/hostedtoolcache
 
-ARG GH_RUNNER_VERSION="2.327.1"
-
-ARG TARGETPLATFORM
-
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 WORKDIR /actions-runner
 COPY install_actions.sh /actions-runner
 
+ARG TARGETPLATFORM
+
 RUN chmod +x /actions-runner/install_actions.sh \
-  && /actions-runner/install_actions.sh ${GH_RUNNER_VERSION} ${TARGETPLATFORM} \
+  && /actions-runner/install_actions.sh "2.327.1" ${TARGETPLATFORM} \
   && rm /actions-runner/install_actions.sh \
-  && chown runner /_work /actions-runner /opt/hostedtoolcache
+  && chown runner /_work /actions-runner /opt/hostedtoolcache \
+  && rm -rf /actions-runner/externals/node20_alpine \
+  && rm -rf /actions-runner/externals/node20 \
+  && rm -rf /actions-runner/externals/node24_alpine
 
 COPY token.sh entrypoint.sh app_token.sh /
 RUN chmod +x /token.sh /entrypoint.sh /app_token.sh
