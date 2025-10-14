@@ -55,7 +55,7 @@ COPY install_actions.sh /actions-runner
 ARG TARGETPLATFORM
 
 RUN chmod +x /actions-runner/install_actions.sh \
-  && /actions-runner/install_actions.sh "2.328.0" ${TARGETPLATFORM} \
+  && /actions-runner/install_actions.sh "2.329.0" ${TARGETPLATFORM} \
   && rm /actions-runner/install_actions.sh \
   && chown runner /_work /actions-runner /opt/hostedtoolcache \
   && rm -rf /actions-runner/externals/node20_alpine \
