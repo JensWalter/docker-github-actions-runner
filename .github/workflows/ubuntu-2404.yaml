@@ -18,7 +18,7 @@ jobs:
       with:
         submodules: 'true'
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+      uses: docker/setup-buildx-action@v4
     - name: build runner
       run: |
         docker build -t d202c2e9.cr.dtz.dev/gh-ubuntu-2404 -f ubuntu-2404/Dockerfile .
