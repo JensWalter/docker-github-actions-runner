@@ -23,7 +23,7 @@ jobs:
       run: |
         docker build -t d202c2e9.cr.dtz.dev/gh-ubuntu-2404 -f ubuntu-2404/Dockerfile .
     - name: Login to d202c2e9.cr.dtz.dev
-      uses: docker/login-action@v3
+      uses: docker/login-action@v4
       with:
         registry: d202c2e9.cr.dtz.dev
         username: apikey
