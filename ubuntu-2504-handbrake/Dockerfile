@@ -1,4 +1,4 @@
-FROM ubuntu:26.04 AS builder
+FROM ubuntu:25.04 AS builder
 
 ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US.UTF-8
